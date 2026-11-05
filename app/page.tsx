@@ -5,32 +5,74 @@ import StoryTracker from "@/components/StoryTracker";
 import Shop from "@/components/Shop";
 import Menu from "@/components/Menu";
 import CartDrawer from "@/components/CartDrawer";
+import { Icon, type IconName } from "@/components/Icons";
 
+type Callout = { icon: IconName; title: string; body: string };
 type Step = {
   id: string;
   stage: number;
   eyebrow: string;
   title: React.ReactNode;
   body: string;
-  bigword: string;
+  left: Callout;
+  right: Callout;
+  hero?: boolean;
 };
 
 const steps: Step[] = [
   {
+    id: "bean",
+    stage: 0,
+    hero: true,
+    eyebrow: "Freshly ground in Lagos",
+    title: (
+      <>
+        Coffee Worth
+        <br />
+        Every Gulp
+      </>
+    ),
+    body: "Specialty beans, ground the moment you order and poured by hand. Scroll to watch your cup come to life.",
+    left: {
+      icon: "leaf",
+      title: "Single-Origin & Ethically Sourced",
+      body: "From the Mambilla Plateau to Yirgacheffe, we buy from farms that are paid fairly.",
+    },
+    right: {
+      icon: "flame",
+      title: "Roasted Weekly, Always Fresh",
+      body: "Small-batch roasts, never more than a few days old when they reach your cup.",
+    },
+  },
+  {
     id: "grind",
     stage: 1,
     eyebrow: "Step 01 · Grind",
-    title: "Grind",
-    body: "Whole beans go straight into the burr grinder the moment you order. Never pre-ground, never stale.",
-    bigword: "grind",
+    title: (
+      <>
+        Ground The Moment
+        <br />
+        You Order
+      </>
+    ),
+    body: "Whole beans go straight into the grinder when you order. Never pre-ground, never stale.",
+    left: { icon: "burr", title: "Burrs, Not Blades", body: "Steel burrs crush evenly instead of chopping, so nothing gets scorched." },
+    right: { icon: "clock", title: "Seconds, Not Days", body: "Coffee starts losing aroma within minutes of grinding. Ours never waits." },
   },
   {
     id: "ground",
     stage: 2,
     eyebrow: "Step 02 · Ground",
-    title: "Ground",
-    body: "Steel burrs crush each bean to an even, sand-fine grind, so every particle brews at the same speed.",
-    bigword: "fresh",
+    title: (
+      <>
+        Even Grounds,
+        <br />
+        Even Flavour
+      </>
+    ),
+    body: "Every particle is the same size, so every particle brews at the same speed.",
+    left: { icon: "grain", title: "Sand-Fine & Uniform", body: "Dialled in for each brew method, from espresso to pour-over." },
+    right: { icon: "aroma", title: "Aroma Locked In", body: "The oils that carry flavour are still in the grounds when they hit your cup." },
   },
   {
     id: "cup",
@@ -38,21 +80,44 @@ const steps: Step[] = [
     eyebrow: "Step 03 · Into the cup",
     title: (
       <>
-        Into the <em>cup</em>
+        Straight Into
+        <br />
+        Your Cup
       </>
     ),
-    body: "Fresh grounds fall straight into your cup, still full of the aroma that makes the first gulp worth it.",
-    bigword: "aroma",
+    body: "Fresh grounds go straight into your cup, still full of the aroma that makes the first gulp worth it.",
+    left: { icon: "cup", title: "Hand-Thrown Ceramics", body: "Heavy, warm cups that hold the heat and feel good in your hands." },
+    right: { icon: "hand", title: "Made For You", body: "Every cup is brewed to order. Nothing sits waiting on a warmer." },
   },
   {
     id: "pour",
     stage: 4,
     eyebrow: "Step 04 · Pour",
-    title: "Pour",
-    body: "Water just off the boil, poured slowly in circles, pulls out the sweetness and leaves the bitterness behind.",
-    bigword: "pour",
+    title: (
+      <>
+        Poured Slowly,
+        <br />
+        By Hand
+      </>
+    ),
+    body: "Water just off the boil, poured in slow circles, brings out the sweetness and leaves the bitterness behind.",
+    left: { icon: "thermo", title: "Just Off The Boil", body: "Around 93°C, hot enough for full flavour without burning it." },
+    right: { icon: "spiral", title: "Slow, Even Circles", body: "A gooseneck kettle lets us wet every ground evenly." },
   },
 ];
+
+function CalloutBlock({ c, side }: { c: Callout; side: "left" | "right" }) {
+  return (
+    <div className={`callout callout-${side}`}>
+      <span className="callout-icon">
+        <Icon name={c.icon} />
+      </span>
+      <h3>{c.title}</h3>
+      <span className="callout-line" aria-hidden="true" />
+      <p>{c.body}</p>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -63,44 +128,22 @@ export default function Home() {
       <CartDrawer />
 
       <main>
-        <section id="bean" className="stage stage-hero" data-stage="0">
-          <div className="pin">
-            <span className="bigword" aria-hidden="true">bean</span>
-            <div className="copy reveal">
-              <span className="eyebrow">Gulpsee Coffee · Lagos</span>
-              <h1 className="display">
-                It starts
-                <br />
-                with one <em>bean</em>
-              </h1>
-              <p>
-                Scroll to watch your coffee being made, from a single bean to a fresh, steaming cup.
-              </p>
-              <div className="cta-row">
-                <a href="#menu" className="pill pill-dark">Order now</a>
-                <a href="#grind" className="round-btn" aria-label="Start the story">↓</a>
-              </div>
-            </div>
-            <div className="scroll-hint" aria-hidden="true">
-              <span>Scroll to brew</span>
-              <i />
-            </div>
-          </div>
-        </section>
-
         {steps.map((s) => (
-          <section key={s.id} id={s.id} className="stage" data-stage={s.stage}>
+          <section key={s.id} id={s.id} className={`stage ${s.hero ? "stage-hero" : ""}`} data-stage={s.stage}>
             <div className="pin">
-              <span className="bigword" aria-hidden="true">{s.bigword}</span>
-              <div className="copy reveal">
+              <div className="intro reveal">
                 <span className="eyebrow">{s.eyebrow}</span>
-                <h2 className="display">{s.title}</h2>
+                {s.hero ? <h1 className="display">{s.title}</h1> : <h2 className="display">{s.title}</h2>}
                 <p>{s.body}</p>
-                <div className="cta-row">
-                  <a href="#menu" className="pill pill-dark">Order now</a>
-                  <span className="arrow-line" aria-hidden="true" />
-                </div>
+                {s.hero && (
+                  <div className="cta-row">
+                    <a href="#menu" className="pill pill-dark">Order now</a>
+                    <a href="#sip" className="pill pill-outline">Shop our beans</a>
+                  </div>
+                )}
               </div>
+              <CalloutBlock c={s.left} side="left" />
+              <CalloutBlock c={s.right} side="right" />
             </div>
           </section>
         ))}

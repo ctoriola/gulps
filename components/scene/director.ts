@@ -18,6 +18,8 @@ export const live = {
   mobile: false,
   camY: HERO_Y,
   camLift: 0,
+  heroCamY: HERO_Y,
+  heroHalfW: 9,
   camZ: 10,
   offsetX: 0,
   // grinder
@@ -52,18 +54,21 @@ export function computeLive(s: number, aspect: number) {
   live.mobile = mobile;
 
   // Camera follows the story downwards.
-  const camY = keyframes(s, [HERO_Y, 0.35, -1.5, -4.6, -4.3, -4.25]);
-  const baseZ = keyframes(s, [10, 10, 10, 9.6, 10.2, 9.4]);
+  const camY = keyframes(s, [HERO_Y, 0.22, -0.6, -4.6, -4.4, -4.25]);
+  const baseZ = keyframes(s, [10.5, 13, 12.5, 10.6, 11.2, 9.6]);
   const zMul = mobile ? clamp(0.95 / aspect, 1, 1.9) : 1;
   live.camZ = baseZ * zMul;
   // On phones the copy sits on top, so push the objects lower in frame.
   const visH = 2 * live.camZ * Math.tan((35 * Math.PI) / 360);
-  live.camY = camY + (mobile ? visH * 0.13 : 0);
+  // Headline sits top-centre, so the object is framed in the lower-middle.
+  const frame = keyframes(s, [0.2, 0.2, 0.14, 0.13, 0.16, 0.04]);
+  live.camY = camY + visH * (frame + (mobile ? 0.03 : 0));
+  live.heroCamY = HERO_Y + 2 * 10.5 * zMul * Math.tan((35 * Math.PI) / 360) * (0.2 + (mobile ? 0.03 : 0));
+  live.heroHalfW = 10.5 * zMul * Math.tan((35 * Math.PI) / 360) * aspect;
   // Raise the camera (while still looking at camY) so we can see into the cup.
   live.camLift = keyframes(s, [0, 0.2, 0.5, 2.0, 2.4, 1.7]);
-  // On wide screens the copy sits left, so shift objects right.
-  const wide = clamp((aspect - 1.05) / 0.4);
-  live.offsetX = keyframes(s, [1.9, 1.7, 1.6, 1.5, 0.9, 0]) * wide;
+  // Layout is centred, so the scene is never shifted sideways.
+  live.offsetX = 0;
 
   // Grinder opens up to reveal the burr.
   live.explode = easeInOut(seg(s, 1.15, 1.75));
@@ -89,7 +94,7 @@ export function computeLive(s: number, aspect: number) {
   const kin = easeOut(seg(s, 2.95, 3.45));
   const kout = easeIn(seg(s, 4.35, 4.85));
   live.kettleX = live.cupX + 0.12 + lerp(6.5, 0, kin) + kout * 6;
-  live.kettleY = rimY + 1.05 + kout * 1.5;
+  live.kettleY = rimY + 0.7 + kout * 1.5;
   live.kettleTilt = 0.5 * easeInOut(seg(s, 3.2, 3.45)) * (1 - easeInOut(seg(s, 4.2, 4.45)));
   live.kettleVisible = s > 2.9 && s < 4.9;
 

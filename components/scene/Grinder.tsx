@@ -124,7 +124,11 @@ export function Grinder() {
       right.current.position.x = e * 0.85;
       right.current.rotation.z = -e * 0.08;
     }
-    if (top.current) top.current.position.y = e * 0.5;
+    // The hopper floats up and out of frame so the open grinder reads clearly.
+    if (top.current) {
+      top.current.position.y = e * 0.5 + Math.pow(e, 2) * 6;
+      top.current.visible = e < 0.97;
+    }
     if (burr.current) {
       const spin = s > 1.1 && s < 3.4 ? 7 : 0.4;
       burr.current.rotation.y += dt * spin;

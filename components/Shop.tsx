@@ -41,11 +41,8 @@ export default function Shop() {
       <div className="shop-inner">
         <div className="shop-head reveal">
           <span className="eyebrow">Step 05 · Sip</span>
-          <h2 className="display shop-title">
-            Find your
-            <br />
-            <em>cup</em>
-          </h2>
+          <h2 className="display shop-title">Find Your Cup</h2>
+          <p className="shop-sub">Take the beans home. Ground fresh for your brewer, or whole bean.</p>
           <a href="#menu" className="pill pill-dark">Order now</a>
         </div>
         <div className="shop-cards">
