@@ -1,10 +1,14 @@
 import * as THREE from "three";
 import { useTextures } from "./textures";
+import { getQuality } from "@/lib/quality";
 
 let cache: ReturnType<typeof make> | null = null;
 
 function make() {
   const t = useTextures();
+  // Phones skip the extra BRDF lobes (sheen, anisotropy, most clearcoat) that
+  // each add a full lighting evaluation per pixel. Reflections stay.
+  const m = getQuality().tier === "mobile";
   return {
     bean: new THREE.MeshPhysicalMaterial({
       vertexColors: true,
@@ -12,9 +16,9 @@ function make() {
       roughnessMap: t.beanRough,
       normalMap: t.beanNormal,
       normalScale: new THREE.Vector2(0.35, 0.35),
-      clearcoat: 0.6,
+      clearcoat: m ? 0 : 0.6,
       clearcoatRoughness: 0.28,
-      sheen: 0.5,
+      sheen: m ? 0 : 0.5,
       sheenRoughness: 0.5,
       sheenColor: new THREE.Color("#b0703f"),
       envMapIntensity: 1.1,
@@ -26,7 +30,7 @@ function make() {
       metalness: 0.1,
       normalMap: t.powderNormal,
       normalScale: new THREE.Vector2(0.18, 0.18),
-      clearcoat: 0.25,
+      clearcoat: m ? 0 : 0.25,
       clearcoatRoughness: 0.45,
     }),
     gloss: new THREE.MeshPhysicalMaterial({ color: "#0b0a0a", roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05 }),
@@ -39,7 +43,7 @@ function make() {
       roughnessMap: t.brushedRough,
       normalMap: t.brushedNormal,
       normalScale: new THREE.Vector2(0.12, 0.12),
-      anisotropy: 0.6,
+      anisotropy: m ? 0 : 0.6,
       envMapIntensity: 1.9,
     }),
     darkSteel: new THREE.MeshPhysicalMaterial({
@@ -47,7 +51,7 @@ function make() {
       roughness: 0.38,
       metalness: 1,
       flatShading: true,
-      anisotropy: 0.5,
+      anisotropy: m ? 0 : 0.5,
       envMapIntensity: 1.2,
     }),
     white: new THREE.MeshBasicMaterial({ color: "#f2ede4" }),
@@ -72,7 +76,7 @@ function make() {
       normalScale: new THREE.Vector2(0.07, 0.07),
       clearcoat: 1,
       clearcoatRoughness: 0.12,
-      sheen: 0.15,
+      sheen: m ? 0 : 0.15,
       envMapIntensity: 1.1,
     }),
     handleGlaze: new THREE.MeshPhysicalMaterial({
@@ -85,7 +89,7 @@ function make() {
     handleWood: new THREE.MeshPhysicalMaterial({
       color: "#241c17",
       roughness: 0.55,
-      clearcoat: 0.4,
+      clearcoat: m ? 0 : 0.4,
       clearcoatRoughness: 0.4,
     }),
   };

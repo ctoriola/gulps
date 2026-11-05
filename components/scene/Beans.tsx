@@ -78,7 +78,7 @@ export function Beans() {
   );
 }
 
-const PILE = 85;
+const PILE = getQuality().tier === "mobile" ? 45 : 85;
 
 /** Make a loose, roughly circular scatter of beans (no overlaps). */
 function scatter(count: number, radius: number, seed: number) {

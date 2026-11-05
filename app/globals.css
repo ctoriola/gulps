@@ -186,13 +186,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: calc(var(--topbar) + 4vh) var(--gutter) 0;
   overflow: hidden;
   pointer-events: none;
-  opacity: 0;
   visibility: hidden;
-  will-change: opacity;
 }
-.stage-hero .pin { opacity: 1; visibility: visible; }
+.stage-hero .pin { visibility: visible; }
 .pin a, .pin button { pointer-events: auto; }
-.intro, .callout { transform: translate3d(0, var(--drift, 0px), 0); }
+/* Small, pre-promoted layers: the scroll loop only changes their opacity and
+   transform, which the compositor handles without layout or repaint. */
+.intro, .callout { will-change: opacity, transform; }
+.stage:not(.stage-hero) .intro, .stage:not(.stage-hero) .callout { opacity: 0; }
 .intro {
   position: relative;
   z-index: 2;
@@ -531,5 +532,4 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { transition: none; opacity: 1; transform: none; }
-  .intro, .callout { transform: none; }
 }

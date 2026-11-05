@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { getQuality } from "@/lib/quality";
 
 /** Deterministic hash-based value noise (tileable over `period`). */
 function makeNoise(period: number, seed = 1) {
@@ -84,39 +85,36 @@ function greyTexture(w: number, h: number, fn: (u: number, v: number) => number,
 let cache: ReturnType<typeof build> | null = null;
 
 function build() {
+  // Phones: half-size maps (4x less CPU work while the page loads, no visible difference on a small screen).
+  const k = getQuality().tier === "mobile" ? 0.5 : 1;
+  const px = (n: number) => Math.round(n * k);
   const n1 = makeNoise(64, 3);
   const n2 = makeNoise(256, 7);
   const n3 = makeNoise(32, 11);
 
   // Brushed metal: fine streaks running around the object (along U).
-  const brushedRough = greyTexture(
-    512,
-    512,
+  const brushedRough = greyTexture(px(512), px(512),
     (u, v) => 0.62 + 0.22 * (n2(u * 4, v * 256) - 0.5) + 0.1 * (n1(u * 8, v * 32) - 0.5),
     [2, 1],
   );
-  const brushedNormal = normalMapFromHeight(512, 512, (u, v) => n2(u * 4, v * 256), 1.2, [2, 1]);
+  const brushedNormal = normalMapFromHeight(px(512), px(512), (u, v) => n2(u * 4, v * 256), 1.2, [2, 1]);
 
   // Powder-coated / matte body: soft orange-peel bumps.
-  const powderNormal = normalMapFromHeight(
-    256,
-    256,
+  const powderNormal = normalMapFromHeight(px(256), px(256),
     (u, v) => n1(u * 64, v * 64) * 0.7 + n3(u * 32, v * 32) * 0.3,
     2.0,
     [3, 2],
   );
 
   // Hand-thrown ceramic: throwing rings (horizontal ridges) + gentle wobble.
-  const ceramicNormal = normalMapFromHeight(
-    512,
-    512,
+  const ceramicNormal = normalMapFromHeight(px(512), px(512),
     (u, v) => 0.5 + 0.5 * Math.sin(v * Math.PI * 2 * 9 + n1(u * 6, v * 6) * 3) * 0.35 + n1(u * 16, v * 16) * 0.3,
     1.6,
   );
 
   // Roasted bean: fine organic surface.
-  const beanNormal = normalMapFromHeight(256, 256, (u, v) => n1(u * 48, v * 24) * 0.6 + n2(u * 64, v * 64) * 0.4, 3.0);
-  const beanRough = greyTexture(256, 256, (u, v) => 0.35 + 0.35 * n1(u * 24, v * 12));
+  const beanNormal = normalMapFromHeight(px(256), px(256), (u, v) => n1(u * 48, v * 24) * 0.6 + n2(u * 64, v * 64) * 0.4, 3.0);
+  const beanRough = greyTexture(px(256), px(256), (u, v) => 0.35 + 0.35 * n1(u * 24, v * 12));
 
   return { brushedRough, brushedNormal, powderNormal, ceramicNormal, beanNormal, beanRough };
 }

@@ -13,6 +13,8 @@ export const story = {
   /** Called when the menu/footer start or stop covering the 3D. */
   onCover: null as null | ((covered: boolean) => void),
   covered: false,
+  /** Advances the shared story position for the current frame (set by StoryTracker). */
+  advance: null as null | ((now: number) => void),
 };
 
 export const STAGES = ["Bean", "Grind", "Ground", "Cup", "Pour", "Sip"] as const;

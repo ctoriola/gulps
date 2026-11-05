@@ -1,2 +1,2 @@
-studio_small_09_1k.hdr — "Studio Small 09" by Poly Haven (https://polyhaven.com/a/studio_small_09)
+studio_small_09_1k.hdr (and the downsampled studio_small_09_512.hdr used on phones) — "Studio Small 09" by Poly Haven (https://polyhaven.com/a/studio_small_09)
 License: CC0 1.0 (public domain). No attribution required.

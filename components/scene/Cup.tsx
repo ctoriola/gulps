@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { createCremaTexture, createCupGeometry, createSoftTexture, cupInner } from "./geometry";
 import { useMaterials } from "./materials";
 import { live } from "./director";
+import { getQuality } from "@/lib/quality";
 
 const PUFFS = 7;
 
@@ -111,11 +112,14 @@ export function Cup() {
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.036, 0]} material={shadowMat}>
         <planeGeometry args={[1.6, 1.6]} />
       </mesh>
-      {/* invisible floor that only shows the cast shadow */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.035, 0]} receiveShadow>
-        <planeGeometry args={[6, 6]} />
-        <shadowMaterial transparent opacity={0.18} color="#3a2410" />
-      </mesh>
+      {/* invisible floor that only shows the cast shadow (desktop: phones have no shadow maps,
+          so this full-size transparent plane would cost fill-rate for nothing) */}
+      {getQuality().tier === "desktop" && (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.035, 0]} receiveShadow>
+          <planeGeometry args={[6, 6]} />
+          <shadowMaterial transparent opacity={0.18} color="#3a2410" />
+        </mesh>
+      )}
       <group ref={spin}>
         <mesh geometry={cupGeo} material={m.ceramic} castShadow receiveShadow />
         {/* handle */}

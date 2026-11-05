@@ -20,11 +20,9 @@ const Effects = lazy(() => import("./Effects"));
  *  other object reads this frame's values. */
 function Director() {
   useFrame((state, dt) => {
-    const d = Math.min(dt, 0.05);
-    // With Lenis the scroll is already eased, so the scene follows it almost
-    // 1:1 (text and 3D stay locked together). Touch scrolling is raw, so smooth more.
-    story.stage = damp(story.stage, story.target, story.smoothed ? 14 : 6, d);
-    if (Math.abs(story.stage - story.target) < 0.0005) story.stage = story.target;
+    // story.stage is smoothed once per frame by the scroll loop (StoryTracker)
+    // and shared with the step copy, so the 3D and the text are always in lockstep.
+    story.advance?.(performance.now());
     computeLive(story.stage, state.size.width / state.size.height);
     const cam = state.camera;
     cam.position.set(0, live.camY + live.camLift, live.camZ);
@@ -158,7 +156,7 @@ export default function Scene() {
       <KeyLight shadows={!mobile} />
       <directionalLight position={[5, 2, 4]} intensity={0.55} color="#ffd9b3" />
       <directionalLight position={[0, 3, -6]} intensity={0.9} color="#fff4e6" />
-      <Environment files="/hdri/studio_small_09_1k.hdr" environmentIntensity={0.85} resolution={q.envRes}>
+      <Environment files={q.hdri} environmentIntensity={0.85} resolution={q.envRes}>
         <Lightformer form="rect" intensity={2.5} color="#ffe0bd" position={[-5, 2, 3]} rotation-y={Math.PI / 2.5} scale={[4, 6, 1]} />
         {/* big overhead + front softboxes so polished steel reads bright, not dark */}
         <Lightformer form="rect" intensity={3} color="#ffffff" position={[0, 6, 1]} rotation-x={Math.PI / 2} scale={[10, 6, 1]} />

@@ -31,8 +31,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
       <head>
-        {/* Start downloading the studio lighting while the JS loads. */}
-        <link rel="preload" href="/hdri/studio_small_09_1k.hdr" as="fetch" crossOrigin="anonymous" />
+        {/* Start downloading the studio lighting while the JS loads (phones get a 4x smaller file).
+            Media queries match MOBILE_MEDIA in lib/quality.ts. */}
+        <link rel="preload" href="/hdri/studio_small_09_512.hdr" as="fetch" crossOrigin="anonymous" media="(pointer: coarse), (max-width: 819px)" />
+        <link rel="preload" href="/hdri/studio_small_09_1k.hdr" as="fetch" crossOrigin="anonymous" media="(pointer: fine) and (min-width: 820px)" />
       </head>
       <body>
         <CartProvider>{children}</CartProvider>
