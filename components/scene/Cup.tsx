@@ -100,7 +100,7 @@ export function Cup() {
         c.position.set(Math.sin(t * 0.8 + i * 1.7) * 0.12 * ph, 1.05 + ph * 1.1, Math.cos(i * 2.3) * 0.08);
         c.scale.setScalar(0.35 + ph * 0.6);
         c.quaternion.copy(state.camera.quaternion);
-        steamMats[i].opacity = Math.sin(Math.PI * ph) * 0.22 * live.steam;
+        steamMats[i].opacity = Math.sin(Math.PI * ph) * 0.08 * live.steam;
       });
     }
   });
@@ -108,16 +108,21 @@ export function Cup() {
   return (
     <group ref={group}>
       {/* soft contact shadow */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.035, 0]} material={shadowMat}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.036, 0]} material={shadowMat}>
         <planeGeometry args={[1.6, 1.6]} />
       </mesh>
+      {/* invisible floor that only shows the cast shadow */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.035, 0]} receiveShadow>
+        <planeGeometry args={[6, 6]} />
+        <shadowMaterial transparent opacity={0.18} color="#3a2410" />
+      </mesh>
       <group ref={spin}>
-        <mesh geometry={cupGeo} material={m.ceramic} />
+        <mesh geometry={cupGeo} material={m.ceramic} castShadow receiveShadow />
         {/* handle */}
-        <mesh position={[0.62, 0.55, 0]} rotation={[0, 0, -Math.PI / 2 - 0.15]} material={m.handleGlaze}>
+        <mesh position={[0.62, 0.55, 0]} rotation={[0, 0, -Math.PI / 2 - 0.15]} material={m.handleGlaze} castShadow receiveShadow>
           <torusGeometry args={[0.21, 0.05, 16, 40, Math.PI * 1.15]} />
         </mesh>
-        <mesh ref={mound} geometry={moundGeo} material={m.grounds} />
+        <mesh ref={mound} geometry={moundGeo} material={m.grounds} receiveShadow />
         <mesh ref={liquid} rotation={[-Math.PI / 2, 0, 0]} material={liquidMat}>
           <circleGeometry args={[1, 64]} />
         </mesh>

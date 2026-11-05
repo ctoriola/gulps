@@ -53,7 +53,7 @@ function BodyHalf({ side }: { side: 1 | -1 }) {
   const m = useMaterials();
   return (
     <group>
-      <mesh material={m.matteBlack} position={[0, BODY_Y, 0]}>
+      <mesh material={m.matteBlack} position={[0, BODY_Y, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[R_TOP, R_BOT, BODY_H, 64, 1, false, side === 1 ? 0 : Math.PI, Math.PI]} />
       </mesh>
       {/* cut face */}
@@ -160,7 +160,7 @@ export function Grinder() {
 
       {/* Burr set, revealed when the body opens */}
       <group ref={burr} position={[0, 0.02, 0]}>
-        <mesh rotation={[Math.PI, 0, 0]} material={m.darkSteel}>
+        <mesh rotation={[Math.PI, 0, 0]} material={m.darkSteel} castShadow receiveShadow>
           <coneGeometry args={[0.42, 0.55, 18, 3]} />
         </mesh>
         <mesh position={[0, -0.05, 0]} material={m.darkSteel}>
@@ -173,7 +173,7 @@ export function Grinder() {
 
       {/* Collar + glass hopper lift away together */}
       <group ref={top}>
-        <mesh position={[0, 0.37, 0]} material={m.steel}>
+        <mesh position={[0, 0.37, 0]} material={m.steel} castShadow receiveShadow>
           <cylinderGeometry args={[0.78, 0.8, 0.32, 64]} />
         </mesh>
         {[0.25, 0.49].map((y) => (
@@ -185,7 +185,7 @@ export function Grinder() {
         <mesh position={[0, 2.05, 0]} rotation={[Math.PI / 2, 0, 0]} material={m.steel}>
           <torusGeometry args={[0.74, 0.018, 8, 64]} />
         </mesh>
-        <instancedMesh ref={pile} args={[beanGeo, m.bean, HOPPER_BEANS]} frustumCulled={false} />
+        <instancedMesh ref={pile} args={[beanGeo, m.bean, HOPPER_BEANS]} frustumCulled={false} castShadow receiveShadow />
       </group>
     </group>
   );

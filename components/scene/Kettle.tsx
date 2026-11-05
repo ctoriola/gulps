@@ -108,13 +108,13 @@ export function Kettle() {
       <group ref={outer}>
         <group rotation={[0, -0.35, 0]}>
           <group position={[-TIP.x * 0.9, -TIP.y * 0.9, 0]} scale={0.9}>
-            <mesh geometry={bodyGeo} material={m.steel} />
+            <mesh geometry={bodyGeo} material={m.steel} castShadow receiveShadow />
             <mesh geometry={lidGeo} material={m.steel} />
             <mesh position={[0, 1.0, 0]} material={m.handleWood}>
               <sphereGeometry args={[0.07, 20, 20]} />
             </mesh>
-            <mesh geometry={spoutGeo} material={m.steel} />
-            <mesh geometry={handleGeo} material={m.handleWood} />
+            <mesh geometry={spoutGeo} material={m.steel} castShadow />
+            <mesh geometry={handleGeo} material={m.handleWood} castShadow />
           </group>
         </group>
       </group>

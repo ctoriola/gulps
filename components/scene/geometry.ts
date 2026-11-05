@@ -49,6 +49,13 @@ export function createBeanGeometry(detail = 64) {
     colors[i * 3 + 2] = tmp.b + n * 0.4;
   }
   g.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  // Seam-free planar UVs so the surface-detail normal map has no visible seam.
+  const uv = new Float32Array(pos.count * 2);
+  for (let i = 0; i < pos.count; i++) {
+    uv[i * 2] = pos.getX(i) * 0.9 + pos.getZ(i) * 0.6 + 0.5;
+    uv[i * 2 + 1] = pos.getY(i) * 0.5 + 0.5;
+  }
+  g.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
   g.computeVertexNormals();
   return g;
 }

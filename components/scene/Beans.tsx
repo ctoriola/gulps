@@ -70,7 +70,7 @@ export function Beans() {
 
   return (
     <group>
-      <mesh ref={hero} geometry={heroGeo} material={m.bean} />
+      <mesh ref={hero} geometry={heroGeo} material={m.bean} castShadow />
       <instancedMesh ref={rain} args={[smallGeo, m.bean, RAIN]} frustumCulled={false} />
     </group>
   );
