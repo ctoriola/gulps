@@ -14,7 +14,8 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; }
+html:not(.lenis) { scroll-behavior: smooth; }
 body {
   margin: 0;
   background: var(--cream);
@@ -174,14 +175,24 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ---------- story sections ---------- */
 .stage { position: relative; height: 160vh; }
 .stage-hero { height: 170vh; }
+/* Each step's copy is a fixed overlay; the scroll loop crossfades them so
+   text and 3D move in lockstep. Only opacity/transform change per frame. */
 .pin {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 2;
   height: 100vh;
-  height: 100svh;
+  height: 100lvh;
   padding: calc(var(--topbar) + 4vh) var(--gutter) 0;
   overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity;
 }
+.stage-hero .pin { opacity: 1; visibility: visible; }
+.pin a, .pin button { pointer-events: auto; }
+.intro, .callout { transform: translate3d(0, var(--drift, 0px), 0); }
 .intro {
   position: relative;
   z-index: 2;
@@ -520,4 +531,5 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { transition: none; opacity: 1; transform: none; }
+  .intro, .callout { transform: none; }
 }

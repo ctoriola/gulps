@@ -3,9 +3,17 @@
 import { useEffect } from "react";
 import { useCart } from "@/lib/cart";
 import { naira } from "@/lib/products";
+import { getLenis } from "@/lib/smooth";
 
 export default function CartDrawer() {
   const { open, setOpen, lines, subtotal, setQty } = useCart();
+
+  // Freeze page scrolling while the drawer is open.
+  useEffect(() => {
+    const l = getLenis();
+    if (open) l?.stop();
+    else l?.start();
+  }, [open]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -16,7 +24,7 @@ export default function CartDrawer() {
   return (
     <div className={`drawer-wrap ${open ? "open" : ""}`} aria-hidden={!open}>
       <button className="drawer-scrim" aria-label="Close cart" onClick={() => setOpen(false)} tabIndex={open ? 0 : -1} />
-      <aside className="drawer" role="dialog" aria-label="Your order">
+      <aside className="drawer" role="dialog" aria-label="Your order" data-lenis-prevent>
         <div className="drawer-head">
           <h3>Your order</h3>
           <button className="icon-btn" onClick={() => setOpen(false)} aria-label="Close" tabIndex={open ? 0 : -1}>✕</button>

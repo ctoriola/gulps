@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, DM_Sans } from "next/font/google";
 import { CartProvider } from "@/lib/cart";
+import "lenis/dist/lenis.css";
 import "./globals.css";
 
 const display = Fraunces({

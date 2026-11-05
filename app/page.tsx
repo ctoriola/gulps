@@ -131,7 +131,7 @@ export default function Home() {
         {steps.map((s) => (
           <section key={s.id} id={s.id} className={`stage ${s.hero ? "stage-hero" : ""}`} data-stage={s.stage}>
             <div className="pin">
-              <div className="intro reveal">
+              <div className="intro">
                 <span className="eyebrow">{s.eyebrow}</span>
                 {s.hero ? <h1 className="display">{s.title}</h1> : <h2 className="display">{s.title}</h2>}
                 <p>{s.body}</p>

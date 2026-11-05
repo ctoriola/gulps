@@ -8,6 +8,11 @@ export const story = {
   stage: 0,
   pointerX: 0,
   pointerY: 0,
+  /** True when page scrolling is smoothed by Lenis (scroll is already eased). */
+  smoothed: false,
+  /** Called when the menu/footer start or stop covering the 3D. */
+  onCover: null as null | ((covered: boolean) => void),
+  covered: false,
 };
 
 export const STAGES = ["Bean", "Grind", "Ground", "Cup", "Pour", "Sip"] as const;

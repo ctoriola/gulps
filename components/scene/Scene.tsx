@@ -21,7 +21,9 @@ const Effects = lazy(() => import("./Effects"));
 function Director() {
   useFrame((state, dt) => {
     const d = Math.min(dt, 0.05);
-    story.stage = damp(story.stage, story.target, 5, d);
+    // With Lenis the scroll is already eased, so the scene follows it almost
+    // 1:1 (text and 3D stay locked together). Touch scrolling is raw, so smooth more.
+    story.stage = damp(story.stage, story.target, story.smoothed ? 14 : 6, d);
     if (Math.abs(story.stage - story.target) < 0.0005) story.stage = story.target;
     computeLive(story.stage, state.size.width / state.size.height);
     const cam = state.camera;
@@ -61,7 +63,7 @@ function KeyLight({ shadows }: { shadows: boolean }) {
       intensity={2.2}
       color="#fff0dc"
       castShadow={shadows}
-      shadow-mapSize={[2048, 2048]}
+      shadow-mapSize={[1024, 1024]}
       shadow-bias={-0.0004}
       shadow-normalBias={0.02}
       shadow-camera-left={-4.5}
@@ -92,7 +94,12 @@ function Ready() {
     });
     const reveal = () => {
       hidden.forEach((o) => (o.visible = false));
-      if (!cancelled) gl.domElement.parentElement?.closest(".scene-layer")?.classList.add("ready");
+      // Let two real frames (incl. the post-processing passes) render before showing.
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          if (!cancelled) gl.domElement.parentElement?.closest(".scene-layer")?.classList.add("ready");
+        }),
+      );
     };
     gl.compileAsync(scene, camera).then(reveal, reveal);
     return () => {
@@ -106,18 +113,11 @@ function Ready() {
 function Pauser() {
   const setFrameloop = useThree((s) => s.setFrameloop);
   useEffect(() => {
-    let paused = false;
-    const check = () => {
-      const menu = document.getElementById("menu");
-      const covered = !!menu && menu.getBoundingClientRect().top <= 0;
-      if (covered !== paused) {
-        paused = covered;
-        setFrameloop(covered ? "never" : "always");
-      }
+    story.onCover = (covered) => setFrameloop(covered ? "never" : "always");
+    if (story.covered) setFrameloop("never");
+    return () => {
+      story.onCover = null;
     };
-    check();
-    window.addEventListener("scroll", check, { passive: true });
-    return () => window.removeEventListener("scroll", check);
   }, [setFrameloop]);
   return null;
 }
@@ -125,13 +125,11 @@ function Pauser() {
 export default function Scene() {
   const q = useMemo(() => getQuality(), []);
   const mobile = q.tier === "mobile";
-  const [high, setHigh] = useState(true);
-  // Phones render at native sharpness (no post-processing to pay for) and
-  // only step resolution down if the frame rate actually drops.
-  const [dpr, setDpr] = useState(() =>
-    mobile ? Math.min(window.devicePixelRatio || 1, 2) : Math.min(window.devicePixelRatio || 1, 1.75),
-  );
-  const maxDpr = mobile ? 2 : 1.75;
+  // Quality adapts ONLY through resolution. Anything that changes shaders
+  // (shadow samples, AO settings) is fixed, because swapping it at runtime
+  // recompiles every material and freezes the page for up to a second.
+  const maxDpr = Math.min(window.devicePixelRatio || 1, mobile ? 2 : 1.75);
+  const [dpr, setDpr] = useState(maxDpr);
 
   return (
     <Canvas
@@ -149,12 +147,9 @@ export default function Scene() {
       <PerformanceMonitor
         flipflops={3}
         onIncline={() => setDpr((d) => Math.min(maxDpr, d + 0.25))}
-        onDecline={() => {
-          setHigh(false);
-          setDpr((d) => Math.max(1.25, d - 0.25));
-        }}
+        onDecline={() => setDpr((d) => Math.max(1, d - 0.25))}
       />
-      {!mobile && <SoftShadows size={28} samples={high ? 12 : 6} focus={0.6} />}
+      {!mobile && <SoftShadows size={28} samples={10} focus={0.6} />}
       <Director />
       <Pauser />
 
@@ -179,12 +174,15 @@ export default function Scene() {
         <Kettle />
       </Root>
 
-      {!mobile && (
+      {mobile ? (
+        <Ready />
+      ) : (
         <Suspense fallback={null}>
-          <Effects high={high} />
+          <Effects />
+          {/* inside the same boundary: only reveals once the effects are loaded */}
+          <Ready />
         </Suspense>
       )}
-      <Ready />
     </Canvas>
   );
 }
