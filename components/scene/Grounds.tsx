@@ -4,8 +4,9 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { live, BURR_BOTTOM_Y } from "./director";
+import { getQuality } from "@/lib/quality";
 
-const COUNT = 3800;
+const COUNT = getQuality().grounds;
 
 /**
  * Stream of freshly ground coffee. Each grain is a tiny faceted 3D particle

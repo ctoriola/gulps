@@ -1,19 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, PerformanceMonitor, SoftShadows } from "@react-three/drei";
-import { EffectComposer, N8AO, SMAA, ToneMapping } from "@react-three/postprocessing";
-import { ToneMappingMode } from "postprocessing";
 import * as THREE from "three";
 import { damp } from "@/lib/anim";
 import { story } from "@/lib/story";
+import { getQuality } from "@/lib/quality";
 import { computeLive, live } from "./director";
 import { Beans } from "./Beans";
 import { Grinder } from "./Grinder";
 import { Grounds } from "./Grounds";
 import { Cup } from "./Cup";
 import { Kettle } from "./Kettle";
+
+const Effects = lazy(() => import("./Effects"));
 
 /** Smooths the scroll stage and moves the camera. Mounted first so every
  *  other object reads this frame's values. */
@@ -44,7 +45,7 @@ function Root({ children }: { children: React.ReactNode }) {
 }
 
 /** Softbox-style key light that travels with the camera and casts soft shadows. */
-function KeyLight() {
+function KeyLight({ shadows }: { shadows: boolean }) {
   const light = useRef<THREE.DirectionalLight>(null);
   const { scene } = useThree();
   useFrame(() => {
@@ -59,7 +60,7 @@ function KeyLight() {
       ref={light}
       intensity={2.2}
       color="#fff0dc"
-      castShadow
+      castShadow={shadows}
       shadow-mapSize={[2048, 2048]}
       shadow-bias={-0.0004}
       shadow-normalBias={0.02}
@@ -73,52 +74,96 @@ function KeyLight() {
   );
 }
 
-/** Post-processing: contact shadows (AO), filmic tone mapping, anti-aliasing. (Bloom is left out: on a transparent canvas it adds halos around edges.) */
-function Effects({ high }: { high: boolean }) {
-  const size = useThree((s) => s.size);
-  const small = size.width < 760;
-  return (
-    <EffectComposer multisampling={0} enableNormalPass={false}>
-      <N8AO aoRadius={0.45} distanceFalloff={0.6} intensity={high ? 2.4 : 1.8} quality={high ? "medium" : "performance"} halfRes={!high || small} color="#2b1808" />
-      <ToneMapping mode={ToneMappingMode.NEUTRAL} />
-      <SMAA />
-    </EffectComposer>
-  );
+/**
+ * Mounts only after every suspended asset (HDRI) has loaded. Compiles every
+ * shader up front (including objects that start hidden, like the kettle and
+ * grounds) so nothing stutters the first time it appears, then reveals the canvas.
+ */
+function Ready() {
+  const { gl, scene, camera } = useThree();
+  useEffect(() => {
+    let cancelled = false;
+    const hidden: THREE.Object3D[] = [];
+    scene.traverse((o) => {
+      if (!o.visible) {
+        hidden.push(o);
+        o.visible = true;
+      }
+    });
+    const reveal = () => {
+      hidden.forEach((o) => (o.visible = false));
+      if (!cancelled) gl.domElement.parentElement?.closest(".scene-layer")?.classList.add("ready");
+    };
+    gl.compileAsync(scene, camera).then(reveal, reveal);
+    return () => {
+      cancelled = true;
+    };
+  }, [gl, scene, camera]);
+  return null;
 }
 
-/** Mounts only after every suspended asset (HDRI) has loaded, then reveals the canvas. */
-function Ready() {
-  const gl = useThree((s) => s.gl);
+/** Stops rendering entirely while the menu/footer cover the screen (saves battery and heat). */
+function Pauser() {
+  const setFrameloop = useThree((s) => s.setFrameloop);
   useEffect(() => {
-    let raf = requestAnimationFrame(() => {
-      raf = requestAnimationFrame(() => gl.domElement.parentElement?.closest(".scene-layer")?.classList.add("ready"));
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [gl]);
+    let paused = false;
+    const check = () => {
+      const menu = document.getElementById("menu");
+      const covered = !!menu && menu.getBoundingClientRect().top <= 0;
+      if (covered !== paused) {
+        paused = covered;
+        setFrameloop(covered ? "never" : "always");
+      }
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
+  }, [setFrameloop]);
   return null;
 }
 
 export default function Scene() {
+  const q = useMemo(() => getQuality(), []);
+  const mobile = q.tier === "mobile";
   const [high, setHigh] = useState(true);
+  // Phones render at native sharpness (no post-processing to pay for) and
+  // only step resolution down if the frame rate actually drops.
+  const [dpr, setDpr] = useState(() =>
+    mobile ? Math.min(window.devicePixelRatio || 1, 2) : Math.min(window.devicePixelRatio || 1, 1.75),
+  );
+  const maxDpr = mobile ? 2 : 1.75;
+
   return (
     <Canvas
       className="scene-canvas"
-      dpr={[1, 1.75]}
-      shadows
+      dpr={dpr}
+      shadows={!mobile}
       camera={{ fov: 35, position: [0, 4.2, 10], near: 0.1, far: 100 }}
-      gl={{ antialias: false, alpha: true, powerPreference: "high-performance", stencil: false }}
-      onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
+      gl={{ antialias: mobile, alpha: true, powerPreference: "high-performance", stencil: false }}
+      onCreated={({ gl }) => {
+        gl.setClearColor(0x000000, 0);
+        // Without the post-processing stack, tone-map in the main render instead.
+        if (mobile) gl.toneMapping = THREE.NeutralToneMapping;
+      }}
     >
-      <PerformanceMonitor onDecline={() => setHigh(false)} />
-      <SoftShadows size={28} samples={high ? 12 : 6} focus={0.6} />
+      <PerformanceMonitor
+        flipflops={3}
+        onIncline={() => setDpr((d) => Math.min(maxDpr, d + 0.25))}
+        onDecline={() => {
+          setHigh(false);
+          setDpr((d) => Math.max(1.25, d - 0.25));
+        }}
+      />
+      {!mobile && <SoftShadows size={28} samples={high ? 12 : 6} focus={0.6} />}
       <Director />
+      <Pauser />
 
       {/* Lighting: real photo-studio HDRI for reflections, plus warm softboxes. */}
-      <ambientLight intensity={0.15} color="#ffe8d2" />
-      <KeyLight />
+      <ambientLight intensity={mobile ? 0.3 : 0.15} color="#ffe8d2" />
+      <KeyLight shadows={!mobile} />
       <directionalLight position={[5, 2, 4]} intensity={0.55} color="#ffd9b3" />
       <directionalLight position={[0, 3, -6]} intensity={0.9} color="#fff4e6" />
-      <Environment files="/hdri/studio_small_09_1k.hdr" environmentIntensity={0.85} resolution={512}>
+      <Environment files="/hdri/studio_small_09_1k.hdr" environmentIntensity={0.85} resolution={q.envRes}>
         <Lightformer form="rect" intensity={2.5} color="#ffe0bd" position={[-5, 2, 3]} rotation-y={Math.PI / 2.5} scale={[4, 6, 1]} />
         {/* big overhead + front softboxes so polished steel reads bright, not dark */}
         <Lightformer form="rect" intensity={3} color="#ffffff" position={[0, 6, 1]} rotation-x={Math.PI / 2} scale={[10, 6, 1]} />
@@ -134,7 +179,11 @@ export default function Scene() {
         <Kettle />
       </Root>
 
-      <Effects high={high} />
+      {!mobile && (
+        <Suspense fallback={null}>
+          <Effects high={high} />
+        </Suspense>
+      )}
       <Ready />
     </Canvas>
   );

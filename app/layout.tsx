@@ -29,6 +29,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
+      <head>
+        {/* Start downloading the studio lighting while the JS loads. */}
+        <link rel="preload" href="/hdri/studio_small_09_1k.hdr" as="fetch" crossOrigin="anonymous" />
+      </head>
       <body>
         <CartProvider>{children}</CartProvider>
       </body>

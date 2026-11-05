@@ -7,6 +7,7 @@ import { easeIn, easeOut, lerp, seg } from "@/lib/anim";
 import { story } from "@/lib/story";
 import { createBeanGeometry } from "./geometry";
 import { useMaterials } from "./materials";
+import { getQuality } from "@/lib/quality";
 import { HERO_Y, HOPPER_DROP_Y, live } from "./director";
 
 const RAIN = 26;
@@ -14,7 +15,7 @@ const RAIN = 26;
 /** The hero bean, plus a shower of beans that follows it into the grinder. */
 export function Beans() {
   const m = useMaterials();
-  const heroGeo = useMemo(() => createBeanGeometry(72), []);
+  const heroGeo = useMemo(() => createBeanGeometry(getQuality().beanDetail), []);
   const smallGeo = useMemo(() => createBeanGeometry(20), []);
   const hero = useRef<THREE.Mesh>(null);
   const rain = useRef<THREE.InstancedMesh>(null);
@@ -136,17 +137,19 @@ function BeanPiles({ geo }: { geo: THREE.BufferGeometry }) {
       placed.current = true;
     }
     const w = live.heroHalfW;
-    const k = live.mobile ? 0.65 : 1;
+    const k = live.mobile ? 0.5 : 1;
+    // On phones the copy fills the top half, so the piles sit lower, beside the bean.
+    const dy = live.mobile ? -2.6 : 0;
     const t = state.clock.elapsedTime;
     const visible = story.stage < 0.8;
     if (left.current) {
       left.current.visible = visible;
-      left.current.position.set(-w - 0.2 + story.pointerX * 0.08, live.heroCamY + 0.15 + Math.sin(t * 0.4) * 0.03, -0.6);
+      left.current.position.set(-w - 0.2 + story.pointerX * 0.08, live.heroCamY + 0.15 + dy + Math.sin(t * 0.4) * 0.03, -0.6);
       left.current.scale.setScalar(k);
     }
     if (right.current) {
       right.current.visible = visible;
-      right.current.position.set(w + 0.1 + story.pointerX * 0.08, live.heroCamY + 0.55 + Math.cos(t * 0.4) * 0.03, -0.6);
+      right.current.position.set(w + 0.1 + story.pointerX * 0.08, live.heroCamY + 0.55 + dy + Math.cos(t * 0.4) * 0.03, -0.6);
       right.current.scale.setScalar(k);
     }
   });
