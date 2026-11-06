@@ -8,12 +8,12 @@ export default function Nav() {
   return (
     <header className="topbar">
       <p className="announce">
-        <strong>Free delivery across Lagos</strong> on orders over ₦20,000. Get 10% off your first order with code: <strong>FIRSTGULP</strong>
+        <strong>Free delivery across Abuja</strong> on orders over ₦20,000. Get 10% off your first order with code: <strong>FIRSTGULP</strong>
       </p>
       <div className="nav">
         <nav className="nav-links" aria-label="Main">
           <a href="#grind">Our process</a>
-          <a href="#sip">Shop beans</a>
+          <a href="#pairings">The Pairings</a>
           <a href="#menu">Menu</a>
         </nav>
         <a href="#bean" className="nav-logo" aria-label="Gulpsee home">

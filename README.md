@@ -27,7 +27,9 @@ Deploy: push to GitHub and import the repo on Vercel. No settings are needed.
 | --- | --- |
 | Page sections and copy | `app/page.tsx` |
 | Styles, colours, fonts | `app/globals.css`, `app/layout.tsx` |
-| Beans and drinks with prices (₦) | `lib/products.ts` |
+| Coffees (Pairings) and drinks with prices (₦) | `lib/products.ts` |
+| Shop facts, gallery, Pairings reveal, Unnamed Menu drink | `lib/content.ts` (null = not known yet; the sentence that needs it stays hidden) |
+| QR landing page for the Unnamed Menu | `app/reveal/page.tsx` (URL: `/reveal`) |
 | Cart (saved in the browser) | `lib/cart.tsx`, `components/CartDrawer.tsx` |
 | Scroll → stage mapping | `components/StoryTracker.tsx` |
 | Animation timeline (camera, timings) | `components/scene/director.ts` |

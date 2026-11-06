@@ -1,55 +1,58 @@
 export type Product = {
   id: string;
   name: string;
-  kind: "beans" | "drink";
+  kind: "coffee" | "drink";
   price: number; // Naira
-  tag?: string;
+  /** Name shown in the cart, when it differs from the card/menu name. */
+  cartName?: string;
   notes?: string;
   detail?: string;
-  color?: string;
+  /** Colours for the blurred artwork behind the cup on a locked Pairing card. */
+  art?: [string, string, string];
 };
 
-// Placeholder catalogue. Swap for your real menu / a Supabase table later.
-export const beans: Product[] = [
+// The four coffees, each paired with an artwork at Hare and Grouse (not revealed yet).
+// Ordering one online orders a pour-over made with it, at the pour-over price.
+export const coffees: Product[] = [
   {
     id: "mambilla",
     name: "Mambilla Highlands",
-    kind: "beans",
-    tag: "Origin",
-    detail: "Taraba, Nigeria · 250g",
+    cartName: "Mambilla Highlands, pour-over",
+    kind: "coffee",
+    detail: "Taraba, Nigeria",
     notes: "Cocoa, plantain, brown sugar",
-    price: 14500,
-    color: "#8fb3c9",
+    price: 5000,
+    art: ["#3f6f8f", "#d9a441", "#8c3b2a"],
   },
   {
     id: "dark-roast",
     name: "Lagos Night Roast",
-    kind: "beans",
-    tag: "Roast",
-    detail: "Dark roast · 250g",
+    cartName: "Lagos Night Roast, pour-over",
+    kind: "coffee",
+    detail: "Dark roast",
     notes: "Dark chocolate, smoke, molasses",
-    price: 13500,
-    color: "#d98f86",
+    price: 5000,
+    art: ["#1f2a44", "#b24a3a", "#e3c27a"],
   },
   {
     id: "yirgacheffe",
     name: "Yirgacheffe",
-    kind: "beans",
-    tag: "Flavor",
-    detail: "Ethiopia · 250g",
+    cartName: "Yirgacheffe, pour-over",
+    kind: "coffee",
+    detail: "Ethiopia",
     notes: "Jasmine, lemon, honey",
-    price: 18000,
-    color: "#d7c7a6",
+    price: 5000,
+    art: ["#e9d36b", "#6f9a7c", "#e8a0a0"],
   },
   {
     id: "house-blend",
     name: "Gulpsee House Blend",
-    kind: "beans",
-    tag: "Blend",
-    detail: "Medium roast · 250g",
+    cartName: "Gulpsee House Blend, pour-over",
+    kind: "coffee",
+    detail: "Medium roast",
     notes: "Caramel, hazelnut, orange",
-    price: 12500,
-    color: "#b9a07e",
+    price: 5000,
+    art: ["#c9783c", "#4b5f3a", "#efe0c4"],
   },
 ];
 
@@ -61,9 +64,10 @@ export const drinks: Product[] = [
   { id: "flat-white", name: "Flat White", kind: "drink", price: 4200, notes: "Ristretto, micro-foam" },
   { id: "pour-over", name: "Pour-over", kind: "drink", price: 5000, notes: "Single origin, by hand" },
   { id: "iced-caramel", name: "Iced Caramel Latte", kind: "drink", price: 4800, notes: "Over ice, house caramel" },
-  { id: "zobo-cold-brew", name: "Zobo Cold Brew", kind: "drink", price: 4500, notes: "Cold brew, hibiscus, ginger" },
+  // Launch drink on the Unnamed Menu: shown by its contents only (see lib/content.ts).
+  { id: "zobo-cold-brew", name: "No name yet", cartName: "New drink: cold brew, hibiscus, ginger", kind: "drink", price: 4500, notes: "Cold brew, hibiscus, ginger" },
 ];
 
-export const allProducts = [...beans, ...drinks];
+export const allProducts = [...coffees, ...drinks];
 
 export const naira = (n: number) => "₦" + n.toLocaleString("en-NG");

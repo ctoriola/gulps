@@ -1,5 +1,6 @@
 import Image from "next/image";
 import FooterScene from "./FooterScene";
+import { gallery, shop } from "@/lib/content";
 
 const P = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" } as const;
 
@@ -48,19 +49,19 @@ const socials = [
 
 const columns = [
   {
-    title: "Explore",
+    title: "Coffee",
     links: [
       ["Our process", "#grind"],
-      ["Shop beans", "#sip"],
+      ["The Pairings", "#pairings"],
       ["Menu", "#menu"],
-      ["Order online", "#menu"],
+      ["Visit", "#visit"],
     ],
   },
   {
     title: "Gulpsee",
     links: [
-      ["Our story", "#bean"],
-      ["Sourcing", "#bean"],
+      ["Our story", "#story"],
+      [gallery.name, "#gallery"],
       ["Wholesale", "#"],
       ["Careers", "#"],
     ],
@@ -78,19 +79,19 @@ const columns = [
 
 export default function Footer() {
   return (
-    <footer id="visit" className="footer">
+    <footer id="contact" className="footer">
       <FooterScene />
       <div className="footer-inner">
         <div className="footer-main">
           <div className="footer-brand">
             <Image src="/brand/wordmark-espresso.png" alt="Gulpsee" width={1200} height={643} className="footer-logo" />
             <p className="footer-tag">
-              Freshly ground in Lagos. Specialty beans, poured by hand, worth every gulp.
+              Poured by hand in {shop.city}. Worth every gulp.
             </p>
             <p className="footer-hours">
-              Mon–Fri 7am – 8pm · Sat–Sun 8am – 9pm
+              {shop.hours}
               <br />
-              Lagos, Nigeria
+              {shop.address[0]}, {shop.address[1]}
             </p>
             <ul className="footer-social">
               {socials.map((s) => (
@@ -118,7 +119,7 @@ export default function Footer() {
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Gulpsee Coffee. All rights reserved.</span>
           <span>
-            Brewed with <span className="footer-heart" aria-label="love">♥</span> in Lagos
+            Brewed with <span className="footer-heart" aria-label="love">♥</span> in {shop.city}
           </span>
         </div>
       </div>

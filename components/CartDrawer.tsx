@@ -30,19 +30,19 @@ export default function CartDrawer() {
           <button className="icon-btn" onClick={() => setOpen(false)} aria-label="Close" tabIndex={open ? 0 : -1}>✕</button>
         </div>
         {lines.length === 0 ? (
-          <p className="drawer-empty">Your cup is empty. Add something from the menu.</p>
+          <p className="drawer-empty">Your cup is empty. Fill it from the menu.</p>
         ) : (
           <ul className="drawer-lines">
             {lines.map((l) => (
               <li key={l.id}>
                 <div>
-                  <strong>{l.product.name}</strong>
+                  <strong>{l.product.cartName ?? l.product.name}</strong>
                   <span>{naira(l.product.price)}</span>
                 </div>
                 <div className="qty">
-                  <button onClick={() => setQty(l.id, l.qty - 1)} aria-label={`Remove one ${l.product.name}`} tabIndex={open ? 0 : -1}>−</button>
+                  <button onClick={() => setQty(l.id, l.qty - 1)} aria-label={`Remove one ${l.product.cartName ?? l.product.name}`} tabIndex={open ? 0 : -1}>−</button>
                   <span>{l.qty}</span>
-                  <button onClick={() => setQty(l.id, l.qty + 1)} aria-label={`Add one ${l.product.name}`} tabIndex={open ? 0 : -1}>+</button>
+                  <button onClick={() => setQty(l.id, l.qty + 1)} aria-label={`Add one ${l.product.cartName ?? l.product.name}`} tabIndex={open ? 0 : -1}>+</button>
                 </div>
               </li>
             ))}
@@ -54,9 +54,9 @@ export default function CartDrawer() {
             <strong>{naira(subtotal)}</strong>
           </div>
           <button className="pill pill-dark pill-block" disabled={lines.length === 0} tabIndex={open ? 0 : -1}>
-            Checkout · coming soon
+            Checkout
           </button>
-          <p className="drawer-note">Online payment and delivery are being set up.</p>
+          <p className="drawer-note">Online ordering is on its way. In the meantime, come and find us.</p>
         </div>
       </aside>
     </div>

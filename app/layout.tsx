@@ -19,8 +19,8 @@ const body = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Gulpsee Coffee · Lagos",
-  description: "From bean to cup. Freshly ground specialty coffee, poured by hand in Lagos.",
+  title: "Gulpsee Coffee · Abuja",
+  description: "Coffee brewed to order and poured by hand, beside a contemporary art gallery in Abuja.",
 };
 
 export const viewport: Viewport = {
