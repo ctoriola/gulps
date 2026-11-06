@@ -36,7 +36,10 @@ Deploy: push to GitHub and import the repo on Vercel. No settings are needed.
 
 ## Changing the animation
 
-Each section has a `data-stage` number. As you scroll from one section to the next, `story.stage` moves smoothly from one number to the next (for example 1 → 2). Every motion in `director.ts` is written as `seg(s, start, end)`: for example, `seg(s, 1.15, 1.75)` makes the grinder open between stage 1.15 and stage 1.75.
+The story is **scroll-triggered**, not scroll-scrubbed. Scrolling about a fifth of the way into the next section fires that step, and it then plays by itself as a timed animation. Scrolling back past that point plays it in reverse.
+
+- Trigger point and step durations: `TRIGGER` and `STEP_SECONDS` in `components/StoryTracker.tsx`
+- What happens during each step: `components/scene/director.ts`. The story position `s` moves smoothly from one step number to the next (for example 1 → 2), and each motion is written as `seg(s, start, end)`. For example, `seg(s, 1.15, 1.75)` makes the grinder open in the first half of the Grind → Ground step.
 
 ## Online ordering (next steps)
 

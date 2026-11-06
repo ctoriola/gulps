@@ -173,8 +173,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 /* ---------- story sections ---------- */
-.stage { position: relative; height: 160vh; }
-.stage-hero { height: 170vh; }
+.stage { position: relative; height: 85vh; }
+.stage-hero { height: 100vh; }
 /* Each step's copy is a fixed overlay; the scroll loop crossfades them so
    text and 3D move in lockstep. Only opacity/transform change per frame. */
 .pin {

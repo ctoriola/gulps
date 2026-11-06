@@ -25,6 +25,7 @@ export const live = {
   // grinder
   explode: 0,
   grinderLift: 0,
+  copyBottomY: 0,
   // grounds stream
   streamHead: 0,
   streamTail: 0,
@@ -63,6 +64,9 @@ export function computeLive(s: number, aspect: number) {
   // Headline sits top-centre, so the object is framed in the lower-middle.
   const frame = keyframes(s, [0.2, 0.2, 0.14, 0.13, 0.16, 0.04]);
   live.camY = camY + visH * (frame + (mobile ? 0.03 : 0));
+  // World height of the bottom of the step copy (~45% down the screen), so
+  // effects can stay clear of the text.
+  live.copyBottomY = live.camY + visH * (0.5 - 0.47);
   live.heroCamY = HERO_Y + 2 * 10.5 * zMul * Math.tan((35 * Math.PI) / 360) * (0.2 + (mobile ? 0.03 : 0));
   live.heroHalfW = 10.5 * zMul * Math.tan((35 * Math.PI) / 360) * aspect;
   // Raise the camera (while still looking at camY) so we can see into the cup.
@@ -73,7 +77,9 @@ export function computeLive(s: number, aspect: number) {
   // Grinder opens up to reveal the burr.
   live.explode = easeInOut(seg(s, 1.15, 1.75));
   // Once the grounds are in the cup the grinder exits upwards.
-  live.grinderLift = easeIn(seg(s, 3.05, 3.7)) * 8;
+  // It leaves on the way INTO the cup step, so that step shows just the cup
+  // (the grounds keep pouring in from above while it rises away).
+  live.grinderLift = easeIn(seg(s, 2.5, 3.0)) * 8;
 
   // Ground coffee stream.
   live.streamHead = seg(s, 1.3, 1.95);
