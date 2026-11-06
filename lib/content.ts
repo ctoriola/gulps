@@ -26,6 +26,9 @@ export const pairings = {
   revealWhen: null as string | null,
   /** Flip to true once the Pairings are revealed (then add artwork + artist per coffee). */
   revealed: false,
+  /** Flip to true to show the coffees' real names (kept in lib/products.ts as realName).
+   *  Until then each card reads "Unnamed Brew". */
+  namesRevealed: false,
 };
 
 /** The Unnamed Menu: one launch drink shown by its contents only. */
