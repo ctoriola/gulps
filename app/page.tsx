@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Nav from "@/components/Nav";
 import SceneMount from "@/components/SceneMount";
 import StoryTracker from "@/components/StoryTracker";
 import Shop from "@/components/Shop";
 import Menu from "@/components/Menu";
 import CartDrawer from "@/components/CartDrawer";
+import Footer from "@/components/Footer";
 import { Icon, type IconName } from "@/components/Icons";
 
 type Callout = { icon: IconName; title: string; body: string };
@@ -151,29 +151,7 @@ export default function Home() {
         <Shop />
         <Menu />
 
-        <footer id="visit" className="footer">
-          <div className="footer-inner">
-            <Image src="/brand/wordmark-cream.png" alt="Gulpsee" width={1200} height={643} className="footer-logo" />
-            <div className="footer-cols">
-              <div>
-                <h4>Visit</h4>
-                <p>Lagos, Nigeria</p>
-                <p>Address coming soon</p>
-              </div>
-              <div>
-                <h4>Hours</h4>
-                <p>Mon–Fri · 7am – 8pm</p>
-                <p>Sat–Sun · 8am – 9pm</p>
-              </div>
-              <div>
-                <h4>Say hello</h4>
-                <p><a href="#">Instagram</a></p>
-                <p><a href="#">WhatsApp</a></p>
-              </div>
-            </div>
-            <p className="footer-small">© {new Date().getFullYear()} Gulpsee Coffee. Every gulp, freshly ground.</p>
-          </div>
-        </footer>
+        <Footer />
       </main>
     </>
   );

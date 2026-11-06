@@ -47,7 +47,6 @@ export function Grounds() {
       uBottom: { value: -6 },
       uHead: { value: 0 },
       uTail: { value: 0 },
-      uFadeTop: { value: 100 },
     }),
     [],
   );
@@ -62,7 +61,7 @@ export function Grounds() {
           /* glsl */ `#include <common>
           attribute vec4 seed;
           attribute vec4 look;
-          uniform float uTime, uTop, uBottom, uHead, uTail, uFadeTop;
+          uniform float uTime, uTop, uBottom, uHead, uTail;
           varying float vShade;
           mat3 rotAxis(vec3 a, float r) {
             a = normalize(a); float s = sin(r), c = cos(r), oc = 1.0 - c;
@@ -92,8 +91,6 @@ export function Grounds() {
             sin(ang) * seed.z * spread
           );
           float vis = step(gT, uHead) * step(uTail, gT);
-          // Grains shrink away above uFadeTop, so the stream emerges below the copy.
-          vis *= smoothstep(uFadeTop, uFadeTop - 0.9, y);
           vec3 p = position * vec3(1.0, look.w, 1.0);
           vec3 transformed = center + gR * p * look.x * vis;
           vShade = seed.w;`,
@@ -115,9 +112,6 @@ export function Grounds() {
     uniforms.uBottom.value = live.streamBottom;
     // The stream stays attached to the burr as the grinder floats away.
     uniforms.uTop.value = BURR_BOTTOM_Y + live.grinderLift;
-    // While the grinder is in shot the stream starts at the burr; once it has
-    // floated away, the stream fades in just below the step copy instead.
-    uniforms.uFadeTop.value = Math.min(uniforms.uTop.value + 0.5, live.copyBottomY);
     if (mesh.current) mesh.current.visible = live.streamHead > 0 && live.streamTail < 1;
   });
 

@@ -421,19 +421,59 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- footer ---------- */
 .footer {
+  --footer-bg: #f8f3ec;
   position: relative;
   z-index: 3;
-  background: var(--brown);
-  color: var(--logo-cream);
-  padding: clamp(56px, 8vw, 96px) var(--gutter) 32px;
+  background: var(--footer-bg);
+  color: var(--ink);
 }
-.footer-inner { max-width: 1100px; margin: 0 auto; }
-.footer-logo { width: min(420px, 70vw); height: auto; }
-.footer-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; margin: 3rem 0; }
-.footer h4 { margin: 0 0 0.6rem; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; }
-.footer p { margin: 0.2rem 0; }
-.footer a:hover { text-decoration: underline; }
-.footer-small { font-size: 0.78rem; opacity: 0.6; border-top: 1px solid rgba(224, 217, 202, 0.2); padding-top: 1.4rem; }
+.footer-scene {
+  display: block;
+  width: 100%;
+  height: clamp(240px, 36vw, 520px);
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--gutter) 28px;
+  margin-top: -2px;
+}
+.footer-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  gap: 2.5rem;
+  padding: 1.5rem 0 3.5rem;
+}
+.footer-logo { width: 150px; height: auto; margin-bottom: 1.1rem; }
+.footer-tag { margin: 0; max-width: 32ch; font-size: 0.92rem; line-height: 1.6; }
+.footer-hours { margin: 0.9rem 0 0; font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+.footer-social { list-style: none; display: flex; gap: 0.5rem; margin: 1.4rem 0 0; padding: 0; }
+.footer-social a {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.footer-social a:hover { background: var(--brown); border-color: var(--brown); color: #fbf6ee; }
+.footer-col h4 { margin: 0.3rem 0 1rem; font-size: 0.86rem; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.footer-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.footer-col a { font-size: 0.86rem; color: var(--muted); transition: color 0.2s; }
+.footer-col a:hover { color: var(--brown); }
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(58, 42, 31, 0.12);
+  padding-top: 1.3rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.footer-heart { color: #b23a26; }
 
 /* ---------- cart drawer ---------- */
 .drawer-wrap { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
@@ -517,7 +557,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .shop-cards { margin-top: 46vh; gap: 12px; }
   .bag { width: 74px; height: 96px; }
   .menu-grid { grid-template-columns: 1fr; }
-  .footer-cols { grid-template-columns: 1fr; gap: 1.4rem; }
+  .footer-main { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem 1rem; padding-bottom: 2.5rem; }
+  .footer-brand { grid-column: 1 / -1; }
 }
 
 /* Touch devices: drop effects that force the browser to re-composite
